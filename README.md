@@ -1,4 +1,4 @@
-# Front proxy
+# lupus Frontproxy
 
 Proxies main application requests and prepares pre-rendered pages by combining the pre-rendered page-shell provided
 by the frontend and the content provided by the backend. Sub-sequent requests will hit fetch the content from the
