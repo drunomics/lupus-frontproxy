@@ -1,0 +1,22 @@
+{
+    "name": "drunomics/lupus-frontproxy",
+    "description": "A simple frontproxy that combines requests of an API backend and a static web frontend.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wolfgang Ziegler",
+            "email": "fago@wolfgangziegler.net"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "drunomics\\LupusFrontProxy\\": "src"
+        }
+    },
+    "require": {
+      "symfony/http-foundation": "^3.4.15",
+      "guzzlehttp/guzzle": "^6.3.0",
+      "symfony/psr-http-message-bridge": "^1.0"
+    }
+}
