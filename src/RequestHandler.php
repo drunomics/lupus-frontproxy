@@ -2,6 +2,7 @@
 
 namespace drunomics\LupusFrontProxy;
 
+use GuzzleHttp\Psr7\Uri;
 use drunomics\LupusFrontProxy\ResponseMerger\ResponseMergerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use GuzzleHttp\Client;
@@ -79,7 +80,7 @@ class RequestHandler {
    *
    * @param string $user
    *   The user name.
-   * @param $password
+   * @param string $password
    *   The password.
    *
    * @return $this
@@ -98,7 +99,8 @@ class RequestHandler {
    * Handles the given request.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   * 
+   *   The http request.
+   *
    * @return \Symfony\Component\HttpFoundation\Response
    *   The generated response.
    */
@@ -170,6 +172,7 @@ class RequestHandler {
    * Gets an error response.
    *
    * @param \Psr\Http\Message\ResponseInterface $response
+   *   The response.
    *
    * @return \Psr\Http\Message\ResponseInterface|\Symfony\Component\HttpFoundation\Response
    */
@@ -181,7 +184,9 @@ class RequestHandler {
    * Combines the frontend and backend responses.
    *
    * @param \Psr\Http\Message\ResponseInterface $backendResponse
+   *   The backend response.
    * @param \Psr\Http\Message\ResponseInterface $frontendResponse
+   *   The frontend response.
    *
    * @return \Symfony\Component\HttpFoundation\Response
    */
@@ -194,6 +199,7 @@ class RequestHandler {
    * Converts the guzzle response to a symfony response.
    *
    * @param \Psr\Http\Message\ResponseInterface $response
+   *   The generated response.
    *
    * @return \Symfony\Component\HttpFoundation\Response
    */
@@ -206,6 +212,7 @@ class RequestHandler {
    * Generates a request by forwarding the request to the backend.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The http request.
    *
    * @return \Psr\Http\Message\ServerRequestInterface
    */
@@ -213,7 +220,7 @@ class RequestHandler {
     // Forward the request to the backend.
     $psr7_request = (new DiactorosFactory())->createRequest($request);
     $new_uri = str_replace($request->getSchemeAndHttpHost(), $this->backendBaseUrl, $psr7_request->getUri());
-    return $psr7_request->withUri(new \GuzzleHttp\Psr7\Uri($new_uri));
+    return $psr7_request->withUri(new Uri($new_uri));
   }
 
 }
