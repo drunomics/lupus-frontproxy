@@ -13,7 +13,9 @@ interface ResponseMergerInterface {
    * Merges the given frontend and backend responses.
    *
    * @param \Psr\Http\Message\ResponseInterface $backendResponse
+   *   The backend response.
    * @param \Psr\Http\Message\ResponseInterface $frontendResponse
+   *   The frontend response.
    *
    * @return \Symfony\Component\HttpFoundation\Response
    *

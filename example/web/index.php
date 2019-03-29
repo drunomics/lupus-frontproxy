@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Example index implementation.
+ */
+
 require __DIR__ . '/../vendor/autoload.php';
 
 use drunomics\LupusFrontProxy\RequestHandler;
