@@ -34,7 +34,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     // Make NUXT hydrate with correct state; i.e. pick up the content and render.
     // Fort that replace the script tag that initialize the __NUXT__ variable.
     $init_nuxt_script = file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js');
-    $page = preg_replace('/\<script\>window\.__NUXT__[^<]*\<\/script\>/', '<script>' . $init_nuxt_script . '</script>', $page);
+    $page .= '<script>' . $init_nuxt_script . '</script>';
 
     // Pipe through the backend response.
     $response = $backendResponse->withBody(\GuzzleHttp\Psr7\stream_for($page));
