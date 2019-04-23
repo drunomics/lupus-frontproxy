@@ -1,7 +1,7 @@
-# lupus Frontproxy
+# lupus Front-Proxy
 
 Proxies main application requests and prepares pre-rendered pages by combining the pre-rendered page-shell provided
-by the frontend and the content provided by the backend. Sub-sequent requests will hit fetch the content from the
+by the front-end and the content provided by the backend. Sub-sequent requests will hit fetch the content from the
 backend via API requests directly.
 
 The package can be used with pluggable request mergers, while the package ships with a working example for a
