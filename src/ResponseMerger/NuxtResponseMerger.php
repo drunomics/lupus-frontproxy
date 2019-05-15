@@ -31,10 +31,12 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     $page = $frontendResponse->getBody()->getContents();
     $page = str_replace('<main role="main" class="site__content"></main>', '<main role="main" class="site__content">' . $data['content'] . '</main>', $page);
 
+    $lupus_settings = json_encode($data['settings']);
+
     // Make NUXT hydrate with correct state i.e. pick up the content and render.
     // Fort that replace the script tag that initialize the __NUXT__ variable.
     $init_nuxt_script = file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js');
-    $page .= '<script>' . $init_nuxt_script . '</script>';
+    $page .= '<script>' . $init_nuxt_script . PHP_EOL . 'var lupus = {settings : ' . $lupus_settings . '}' . PHP_EOL . '</script>';
 
     // Pipe through the backend response.
     $response = $backendResponse->withBody(\GuzzleHttp\Psr7\stream_for($page));
