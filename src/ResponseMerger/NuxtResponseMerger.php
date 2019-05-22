@@ -34,7 +34,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     // Make NUXT hydrate with correct state i.e. pick up the content and render.
     // Fort that replace the script tag that initialize the __NUXT__ variable.
     $init_nuxt_script = file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js');
-    $lupus_settings = isset($data['settings']) ? json_encode($data['settings']) : [];
+    $lupus_settings = isset($data['settings']) ? json_encode($data['settings']) : '{}';
     $page .= '<script>' . $init_nuxt_script . PHP_EOL . 'var lupus = {settings : ' . $lupus_settings . '}' . PHP_EOL . '</script>';
 
     // Pipe through the backend response.
