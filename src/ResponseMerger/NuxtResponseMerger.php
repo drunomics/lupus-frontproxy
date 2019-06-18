@@ -29,7 +29,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
 
     // Finally, merge responses and serve them.
     $page = $frontendResponse->getBody()->getContents();
-    $page = str_replace('<main role="main" class="site__content"></main>', '<main role="main" class="site__content">' . $data['content'] . '</main>', $page);
+    $page = preg_replace('/<main role="main"(.*)><\/main>/', '<main role="main"$1>' . $data['content'] . '</main>', $page);
 
     // Make NUXT hydrate with correct state i.e. pick up the content and render.
     // Fort that replace the script tag that initialize the __NUXT__ variable.
