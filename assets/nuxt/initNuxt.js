@@ -5,6 +5,6 @@ window.lupusContentEl = document.querySelector('main[role="main"]');
 lupus = Object.assign(lupus ? lupus : {}, {
   initialState: {
     synced: false,
-    content: window.contentEl ? window.contentEl.innerHTML : ''
+    content: window.lupusContentEl ? window.lupusContentEl.innerHTML : ''
   }
 });
