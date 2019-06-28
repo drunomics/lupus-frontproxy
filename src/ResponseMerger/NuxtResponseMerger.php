@@ -35,7 +35,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     // this object used to set initial state correctly within the frontend application
     $init_nuxt_script = file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js');
     $lupus_settings = isset($data['settings']) ? json_encode($data['settings']) : '{}';
-    $page = str_replace('</body>', '<script>window.lupus = {settings : ' . $lupus_settings . '};' . $init_nuxt_script . '</script></body>');
+    $page = str_replace('</body>', '<script>window.lupus = {settings : ' . $lupus_settings . '};' . $init_nuxt_script . '</script></body>', $page);
 
 
     // Pipe through the backend response.
