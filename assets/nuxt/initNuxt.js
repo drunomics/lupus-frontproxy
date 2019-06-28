@@ -4,7 +4,7 @@
 window.lupusContentEl = document.querySelector('main[role="main"]');
 lupus = Object.assign(lupus ? lupus : {}, {
   initialState: {
-    route: window.$nuxt.$route.path,
+    synced: false,
     content: window.contentEl ? window.contentEl.innerHTML : ''
   }
 });
