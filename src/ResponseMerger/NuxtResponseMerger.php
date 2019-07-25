@@ -19,7 +19,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
    */
   public function mergeResponses(ResponseInterface $backendResponse, ResponseInterface $frontendResponse) {
     // Only deal with JSON responses, no assets.
-    $header = $backendResponse->getHeader('Content-Type');
+    $header = $backendResponse->getHeader('content-type');
 
     if (empty($header[0]) || strpos($header[0], 'application/json') !== 0) {
       throw new BadRequestHttpException("Invalid content type requested.");
@@ -40,7 +40,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
 
     // Pipe through the backend response.
     $response = $backendResponse->withBody(\GuzzleHttp\Psr7\stream_for($page));
-    return $response->withHeader('Content-Type', 'text/html');
+    return $response->withHeader('content-type', 'text/html');
   }
 
   /**
