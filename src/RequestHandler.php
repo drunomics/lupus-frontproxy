@@ -12,6 +12,7 @@ use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Zend\Stdlib\RequestInterface;
 
 /**
  * Handles requests.
@@ -106,22 +107,11 @@ class RequestHandler {
    */
   public function handle(Request $request) {
     try {
-      $client = new Client($this->guzzleConfig);
-      $backend_response = $client->sendAsync($this->getBackendRequest($request), [
-        'allow_redirects' => FALSE,
-        'http_errors' => FALSE,
-      ]);
+      $backend_request = $this->getBackendRequest($request);
       // Fetch the page shell from the frontend.
       // @todo: Add caching here.
       $frontend_request = new GuzzleRequest('GET', $this->frontendBaseUrl . '/layout--default.html');
-      $frontend_response = $client->sendAsync($frontend_request);
-
-      // Resolve the frontend promise first since static files should be always
-      // faster than the backend.
-      /** @var \Psr\Http\Message\ResponseInterface $frontend_response */
-      /** @var \Psr\Http\Message\ResponseInterface $backend_response */
-      $frontend_response = $frontend_response->wait();
-      $backend_response = $backend_response->wait();
+      list($frontend_response, $backend_response) = $this->fetchResponses($frontend_request, $backend_request);
 
       $response_status = intval($backend_response->getStatusCode() / 100);
       if ($response_status == 2) {
@@ -148,6 +138,36 @@ class RequestHandler {
       $response->setStatusCode(500);
       return $response;
     }
+  }
+
+  /**
+   * Fetch responses for the given requests.
+   *
+   * @param \GuzzleHttp\Psr7\Request $frontend_request
+   *   The frontend request.
+   * @param \GuzzleHttp\Psr7\Request $backend_request
+   *   The backend request.
+   *
+   * @return \Psr\Http\Message\ResponseInterface[]
+   *   A numerical indexed array with two entries, the frontend and backend
+   *   response.
+   */
+  protected function fetchResponses(GuzzleRequest $frontend_request, GuzzleRequest $backend_request) {
+    $client = new Client($this->guzzleConfig);
+
+    $backend_response = $client->sendAsync($backend_request, [
+      'allow_redirects' => FALSE,
+      'http_errors' => FALSE,
+    ]);
+    $frontend_response = $client->sendAsync($frontend_request);
+
+    // Resolve the frontend promise first since static files should be always
+    // faster than the backend.
+    /** @var \Psr\Http\Message\ResponseInterface $frontend_response */
+    /** @var \Psr\Http\Message\ResponseInterface $backend_response */
+    $frontend_response = $frontend_response->wait();
+    $backend_response = $backend_response->wait();
+    return [$frontend_response, $backend_response];
   }
 
   /**
