@@ -2,6 +2,8 @@
 
 namespace drunomics\LupusFrontProxy;
 
+use drunomics\LupusFrontProxy\ResponseFetcher\DefaultResponseFetcher;
+use drunomics\LupusFrontProxy\ResponseFetcher\ResponseFetcherInterface;
 use GuzzleHttp\Psr7\Uri;
 use drunomics\LupusFrontProxy\ResponseMerger\ResponseMergerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,18 +43,18 @@ class RequestHandler {
   protected $frontendBaseUrl;
 
   /**
-   * Guzzle config for configuring request option defaults.
-   *
-   * @var array
-   */
-  protected $guzzleConfig = [];
-
-  /**
    * The response merger.
    *
    * @var \drunomics\LupusFrontProxy\ResponseMerger\ResponseMergerInterface
    */
   protected $responseMerger;
+
+  /**
+   * The response fetcher.
+   *
+   * @var \drunomics\LupusFrontProxy\ResponseFetcher\ResponseFetcherInterface
+   */
+  protected $responseFetcher;
 
   /**
    * RequestHandler constructor.
@@ -65,12 +67,16 @@ class RequestHandler {
    *   The base URL of the frontend.
    * @param \drunomics\LupusFrontProxy\ResponseMerger\ResponseMergerInterface $responseMerger
    *   The response merger to use.
+   * @param \drunomics\LupusFrontProxy\ResponseFetcher\ResponseFetcherInterface|null $responseFetcher
+   *   (optional) The response fetcher to use.
    */
-  public function __construct($baseUrl, $backendBaseUrl, $frontendBaseUrl, ResponseMergerInterface $responseMerger) {
+  public function __construct($baseUrl, $backendBaseUrl, $frontendBaseUrl, ResponseMergerInterface $responseMerger, ResponseFetcherInterface $responseFetcher = NULL) {
+    /** @var TYPE_NAME $this */
     $this->baseUrl = $baseUrl;
     $this->backendBaseUrl = trim($backendBaseUrl, '/');
     $this->frontendBaseUrl = trim($frontendBaseUrl, '/');
     $this->responseMerger = $responseMerger;
+    $this->responseFetcher = $responseFetcher ?: new DefaultResponseFetcher();
   }
 
   /**
@@ -111,7 +117,7 @@ class RequestHandler {
       // Fetch the page shell from the frontend.
       // @todo: Add caching here.
       $frontend_request = new GuzzleRequest('GET', $this->frontendBaseUrl . '/layout--default.html');
-      list($frontend_response, $backend_response) = $this->fetchResponses($frontend_request, $backend_request);
+      list($frontend_response, $backend_response) = $this->responseFetcher->fetchResponses($frontend_request, $backend_request);
 
       $response_status = intval($backend_response->getStatusCode() / 100);
       if ($response_status == 2) {
@@ -141,36 +147,6 @@ class RequestHandler {
   }
 
   /**
-   * Fetch responses for the given requests.
-   *
-   * @param \GuzzleHttp\Psr7\Request $frontend_request
-   *   The frontend request.
-   * @param \GuzzleHttp\Psr7\Request $backend_request
-   *   The backend request.
-   *
-   * @return \Psr\Http\Message\ResponseInterface[]
-   *   A numerical indexed array with two entries, the frontend and backend
-   *   response.
-   */
-  protected function fetchResponses(GuzzleRequest $frontend_request, GuzzleRequest $backend_request) {
-    $client = new Client($this->guzzleConfig);
-
-    $backend_response = $client->sendAsync($backend_request, [
-      'allow_redirects' => FALSE,
-      'http_errors' => FALSE,
-    ]);
-    $frontend_response = $client->sendAsync($frontend_request);
-
-    // Resolve the frontend promise first since static files should be always
-    // faster than the backend.
-    /** @var \Psr\Http\Message\ResponseInterface $frontend_response */
-    /** @var \Psr\Http\Message\ResponseInterface $backend_response */
-    $frontend_response = $frontend_response->wait();
-    $backend_response = $backend_response->wait();
-    return [$frontend_response, $backend_response];
-  }
-
-  /**
    * Maps URLs from backend to the base URLs in headers.
    *
    * @param \Psr\Http\Message\ResponseInterface $response
@@ -179,6 +155,7 @@ class RequestHandler {
    *   The header to map.
    *
    * @return \Psr\Http\Message\ResponseInterface
+   *   The mapped response.
    */
   private function mapHeaderUrl(ResponseInterface $response, $header) {
     $value = $response->getHeader($header);
@@ -195,6 +172,7 @@ class RequestHandler {
    *   The response.
    *
    * @return \Psr\Http\Message\ResponseInterface|\Symfony\Component\HttpFoundation\Response
+   *   The error response.
    */
   private function getErrorResponse(ResponseInterface $response) {
     return $this->responseMerger->getErrorResponse($response);
@@ -209,6 +187,7 @@ class RequestHandler {
    *   The frontend response.
    *
    * @return \Symfony\Component\HttpFoundation\Response
+   *   The combined response.
    */
   private function getCombinedResponse(ResponseInterface $backendResponse, ResponseInterface $frontendResponse) {
     $response = $this->responseMerger->mergeResponses($backendResponse, $frontendResponse);
@@ -222,6 +201,7 @@ class RequestHandler {
    *   The generated response.
    *
    * @return \Symfony\Component\HttpFoundation\Response
+   *   The converted response.
    */
   private function convertToSymfonyResponse(ResponseInterface $response) {
     $httpFoundationFactory = new HttpFoundationFactory();
@@ -235,6 +215,7 @@ class RequestHandler {
    *   The http request.
    *
    * @return \Psr\Http\Message\ServerRequestInterface
+   *   The backend request.
    */
   private function getBackendRequest(Request $request) {
     // Forward the request to the backend.
