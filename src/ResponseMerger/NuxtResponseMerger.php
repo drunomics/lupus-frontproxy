@@ -25,10 +25,10 @@ class NuxtResponseMerger implements ResponseMergerInterface {
       throw new BadRequestHttpException("Invalid content type requested.");
     }
 
-    $data = json_decode($backendResponse->getBody()->getContents(), TRUE);
+    $data = json_decode($backendResponse->getBody()->__toString(), TRUE);
 
     // Finally, merge responses and serve them.
-    $page = $frontendResponse->getBody()->getContents();
+    $page = $frontendResponse->getBody()->__toString();
     $page = preg_replace('/<main role="main"(.*)><\/main>/', '<main role="main"$1>' . $data['content'] . '</main>', $page);
 
     // Append script element before closing body it will add `window.lupus`
