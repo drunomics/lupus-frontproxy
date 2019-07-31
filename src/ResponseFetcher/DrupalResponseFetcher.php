@@ -16,14 +16,7 @@ use Psr\Http\Message\RequestInterface;
  * consequence we bypass any reverse proxies for those backend requests, but
  * Drupal internal page caching still applies.
  */
-class DrupalResponseFetcher implements ResponseFetcherInterface {
-
-  /**
-   * Guzzle config for configuring request option defaults.
-   *
-   * @var array
-   */
-  protected $guzzleConfig = [];
+class DrupalResponseFetcher extends DefaultResponseFetcher {
 
   /**
    * The class loader.

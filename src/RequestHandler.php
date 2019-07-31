@@ -91,12 +91,7 @@ class RequestHandler {
    * @return $this
    */
   public function setHttpAuth($user, $password) {
-    if ($user && $password) {
-      $this->guzzleConfig['auth'] = [$user, $password];
-    }
-    else {
-      unset($this->guzzleConfig['auth']);
-    }
+    $this->responseFetcher->setHttpAuth($user, $password);
     return $this;
   }
 

@@ -23,4 +23,17 @@ interface ResponseFetcherInterface {
    */
   public function fetchResponses(RequestInterface $frontend_request, RequestInterface $backend_request);
 
+  /**
+   * Allows setting basic HTTP authentication credentials.
+   *
+   * The authentication is applied for both, requests to the frontend and
+   * backend.
+   *
+   * @param string $user
+   *   The user name.
+   * @param string $password
+   *   The password.
+   */
+  public function setHttpAuth($user, $password);
+
 }

@@ -20,6 +20,18 @@ class DefaultResponseFetcher implements ResponseFetcherInterface {
   /**
    * {@inheritdoc}
    */
+  public function setHttpAuth($user, $password) {
+    if ($user && $password) {
+      $this->guzzleConfig['auth'] = [$user, $password];
+    }
+    else {
+      unset($this->guzzleConfig['auth']);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function fetchResponses(RequestInterface $frontend_request, RequestInterface $backend_request) {
     $client = new Client($this->guzzleConfig);
 
