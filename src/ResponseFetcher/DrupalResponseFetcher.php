@@ -78,6 +78,11 @@ class DrupalResponseFetcher implements ResponseFetcherInterface {
    * @return \Psr\Http\Message\ResponseInterface
    */
   private function handleBackendRequest(RequestInterface $request) {
+    // Determine app root and change directory to it, so templates etc. are
+    // all found as usual.
+    DrupalKernel::bootEnvironment();
+    chdir(DRUPAL_ROOT);
+
     // Directly handle the backend request via Drupal.
     $kernel = new DrupalKernel('prod', $this->autoloader);
 
