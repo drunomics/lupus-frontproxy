@@ -18,7 +18,7 @@ class DefaultResponseFetcher implements ResponseFetcherInterface {
   protected $guzzleConfig = [];
 
   /**
-   * {@inheritDoc}
+   * {@inheritdoc}
    */
   public function fetchResponses(RequestInterface $frontend_request, RequestInterface $backend_request) {
     $client = new Client($this->guzzleConfig);

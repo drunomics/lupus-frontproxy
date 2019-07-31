@@ -52,7 +52,7 @@ class DrupalResponseFetcher implements ResponseFetcherInterface {
   }
 
   /**
-   * {@inheritDoc}
+   * {@inheritdoc}
    */
   public function fetchResponses(RequestInterface $frontend_request, RequestInterface $backend_request) {
     $client = new Client($this->guzzleConfig);

@@ -7,14 +7,12 @@ use drunomics\LupusFrontProxy\ResponseFetcher\ResponseFetcherInterface;
 use GuzzleHttp\Psr7\Uri;
 use drunomics\LupusFrontProxy\ResponseMerger\ResponseMergerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Zend\Stdlib\RequestInterface;
 
 /**
  * Handles requests.
