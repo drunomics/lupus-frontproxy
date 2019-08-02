@@ -36,16 +36,14 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     // the frontend application.
     $init_nuxt_script = file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js');
 
-    // Prepare breadcrumbs string.
+    // Prepare breadcrumbs.
     if (isset($data['breadcrumbs'])) {
       $init_nuxt_script = str_replace('breadcrumbs: { }', 'breadcrumbs: ' . json_encode($data['breadcrumbs']), $init_nuxt_script);
-      $breadcrumbs = '';
-      foreach ($data['breadcrumbs'] as $crumb) {
-        $url = $crumb['url'];
-        $label = $crumb['label'];
-        $breadcrumbs .= "<a href='" . $url . "'>" . $label . "</a>";
-      }
-      $page = preg_replace('/<div class="breadcrumbs"(.*)><\/div>/', '<div class="breadcrumbs"$1>' . $breadcrumbs . '</div>', $page);
+    }
+
+    // Prepare breadcrumbs HTML.
+    if (isset($data['breadcrumbs_html'])) {
+      $page = preg_replace('/<div class="breadcrumbs"(.*)><\/div>/', '<div class="breadcrumbs"$1>' . $data['breadcrumbs_html'] . '</div>', $page);
     }
 
     $lupus_settings = isset($data['settings']) ? json_encode($data['settings']) : '{}';
