@@ -35,19 +35,21 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     // global object, this object used to set initial state correctly within
     // the frontend application.
     $init_nuxt_script = file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js');
-    $lupus_settings = isset($data['settings']) ? json_encode($data['settings']) : '{}';
-    $page = str_replace('</body>', '<script>window.lupus = {settings : ' . $lupus_settings . '};' . $init_nuxt_script . '</script></body>', $page);
 
     // Prepare breadcrumbs string.
-    $breadcrumbs = '';
     if (isset($data['breadcrumbs'])) {
+      $init_nuxt_script = str_replace('breadcrumbs: { }', 'breadcrumbs: ' . json_encode($data['breadcrumbs']), $init_nuxt_script);
+      $breadcrumbs = '';
       foreach ($data['breadcrumbs'] as $crumb) {
         $url = $crumb['url'];
         $label = $crumb['label'];
         $breadcrumbs .= "<a href='" . $url . "'>" . $label . "</a>";
       }
+      $page = preg_replace('/<div class="breadcrumbs"(.*)><\/div>/', '<div class="breadcrumbs"$1>' . $breadcrumbs . '</div>', $page);
     }
-    $page = preg_replace('/<div class="breadcrumbs"(.*)><\/div>/', '<div class="breadcrumbs"$1>' . $breadcrumbs . '</div>', $page);
+
+    $lupus_settings = isset($data['settings']) ? json_encode($data['settings']) : '{}';
+    $page = str_replace('</body>', '<script>window.lupus = {settings : ' . $lupus_settings . '};' . $init_nuxt_script . '</script></body>', $page);
 
     // Pipe through the backend response.
     $response = $backendResponse->withBody(\GuzzleHttp\Psr7\stream_for($page));
