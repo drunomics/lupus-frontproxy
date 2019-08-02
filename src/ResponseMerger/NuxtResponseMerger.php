@@ -38,6 +38,17 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     $lupus_settings = isset($data['settings']) ? json_encode($data['settings']) : '{}';
     $page = str_replace('</body>', '<script>window.lupus = {settings : ' . $lupus_settings . '};' . $init_nuxt_script . '</script></body>', $page);
 
+    // Prepare breadcrumbs string.
+    $breadcrumbs = '';
+    if (isset($data['breadcrumbs'])) {
+      foreach ($data['breadcrumbs'] as $crumb) {
+        $url = $crumb['url'];
+        $label = $crumb['label'];
+        $breadcrumbs .= "<a href='" . $url . "'>" . $label . "</a>";
+      }
+    }
+    $page = preg_replace('/<div class="breadcrumbs"(.*)><\/div>/', '<div class="breadcrumbs"$1>' . $breadcrumbs . '</div>', $page);
+
     // Pipe through the backend response.
     $response = $backendResponse->withBody(\GuzzleHttp\Psr7\stream_for($page));
     return $response->withHeader('Content-Type', 'text/html');
