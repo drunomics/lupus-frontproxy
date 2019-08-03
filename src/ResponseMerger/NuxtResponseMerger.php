@@ -35,6 +35,17 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     // global object, this object used to set initial state correctly within
     // the frontend application.
     $init_nuxt_script = file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js');
+
+    // Prepare breadcrumbs.
+    if (isset($data['breadcrumbs'])) {
+      $init_nuxt_script = str_replace('breadcrumbs: { }', 'breadcrumbs: ' . json_encode($data['breadcrumbs']), $init_nuxt_script);
+    }
+
+    // Prepare breadcrumbs HTML.
+    if (isset($data['breadcrumbs_html'])) {
+      $page = preg_replace('/<div class="breadcrumbs"(.*)><\/div>/', '<div class="breadcrumbs"$1>' . $data['breadcrumbs_html'] . '</div>', $page);
+    }
+
     $lupus_settings = isset($data['settings']) ? json_encode($data['settings']) : '{}';
     $page = str_replace('</body>', '<script>window.lupus = {settings : ' . $lupus_settings . '};' . $init_nuxt_script . '</script></body>', $page);
 
