@@ -29,6 +29,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
 
     // Finally, merge responses and serve them.
     $page = $frontendResponse->getBody()->__toString();
+    $page = preg_replace('/<title(.*)><\/title>/', '<title$1>' . $data['title'] . '</title>', $page);
     $page = preg_replace('/<main role="main"(.*)><\/main>/', '<main role="main"$1>' . $data['content'] . '</main>', $page);
 
     // Append script element before closing body it will add `window.lupus`
@@ -44,6 +45,26 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     // Prepare breadcrumbs HTML.
     if (isset($data['breadcrumbs_html'])) {
       $page = preg_replace('/<div class="breadcrumbs"(.*)><\/div>/', '<div class="breadcrumbs"$1>' . $data['breadcrumbs_html'] . '</div>', $page);
+    }
+
+    // Prepare metatags.
+    if (isset($data['metatags'])) {
+      $init_nuxt_script = str_replace('metatags: { }', 'metatags: ' . json_encode($data['metatags']), $init_nuxt_script);
+
+      $metatags_html = '';
+      foreach ($data['metatags'] as $tag_type => $metatags_data) {
+        foreach ($metatags_data as $properties) {
+          $attributes_string = "";
+          foreach ($properties as $attribute => $value) {
+            $attributes_string .= " " . $attribute . "='" . $value . "'";
+          }
+          $metatags_html .= "<$tag_type data-source='backend'$attributes_string/>";
+        }
+      }
+
+      if ($metatags_html != '') {
+        $page = preg_replace('/<head(.*)>/', '<head$1>' . $metatags_html, $page);
+      }
     }
 
     $lupus_settings = isset($data['settings']) ? json_encode($data['settings']) : '{}';
