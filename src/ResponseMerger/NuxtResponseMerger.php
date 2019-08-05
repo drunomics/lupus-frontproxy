@@ -29,12 +29,49 @@ class NuxtResponseMerger implements ResponseMergerInterface {
 
     // Finally, merge responses and serve them.
     $page = $frontendResponse->getBody()->__toString();
+    $page = preg_replace('/<title(.*)>(.*)<\/title>/', '<title$1>' . strip_tags($data['title']) . '</title>', $page);
     $page = preg_replace('/<main role="main"(.*)><\/main>/', '<main role="main"$1>' . $data['content'] . '</main>', $page);
 
     // Append script element before closing body it will add `window.lupus`
     // global object, this object used to set initial state correctly within
     // the frontend application.
     $init_nuxt_script = file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js');
+
+    // Prepare messages.
+    if (isset($data['breadcrumbs'])) {
+      $init_nuxt_script = str_replace('messages: { }', 'messages: ' . json_encode($data['messages']), $init_nuxt_script);
+    }
+
+    // Prepare breadcrumbs.
+    if (isset($data['breadcrumbs'])) {
+      $init_nuxt_script = str_replace('breadcrumbs: { }', 'breadcrumbs: ' . json_encode($data['breadcrumbs']), $init_nuxt_script);
+    }
+
+    // Prepare breadcrumbs HTML.
+    if (isset($data['breadcrumbs_html'])) {
+      $page = preg_replace('/<div class="breadcrumbs"(.*)><\/div>/', '<div class="breadcrumbs"$1>' . $data['breadcrumbs_html'] . '</div>', $page);
+    }
+
+    // Prepare metatags.
+    if (isset($data['metatags'])) {
+      $init_nuxt_script = str_replace('metatags: { }', 'metatags: ' . json_encode($data['metatags']), $init_nuxt_script);
+
+      $metatags_html = '';
+      foreach ($data['metatags'] as $tag_type => $metatags_data) {
+        foreach ($metatags_data as $properties) {
+          $attributes_string = "";
+          foreach ($properties as $attribute => $value) {
+            $attributes_string .= " " . $attribute . "='" . $value . "'";
+          }
+          $metatags_html .= "<$tag_type data-source='backend'$attributes_string/>";
+        }
+      }
+
+      if ($metatags_html != '') {
+        $page = preg_replace('/<head (.*)>/', '<head $1>' . $metatags_html, $page);
+      }
+    }
+
     $lupus_settings = isset($data['settings']) ? json_encode($data['settings']) : '{}';
     $page = str_replace('</body>', '<script>window.lupus = {settings : ' . $lupus_settings . '};' . $init_nuxt_script . '</script></body>', $page);
 
