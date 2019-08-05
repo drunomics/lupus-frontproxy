@@ -6,6 +6,7 @@ lupus = Object.assign(lupus ? lupus : {}, {
   initialState: {
     synced: false,
     content: window.lupusContentEl ? window.lupusContentEl.innerHTML : '',
-    breadcrumbs: { }
+    breadcrumbs: { },
+    metatags: { }
   }
 });
