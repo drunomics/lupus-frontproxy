@@ -7,6 +7,7 @@ lupus = Object.assign(lupus ? lupus : {}, {
     synced: false,
     content: window.lupusContentEl ? window.lupusContentEl.innerHTML : '',
     breadcrumbs: { },
-    metatags: { }
+    metatags: { },
+    messages: { }
   }
 });
