@@ -38,7 +38,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     $init_nuxt_script = file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js');
 
     // Prepare messages.
-    if (isset($data['breadcrumbs'])) {
+    if (isset($data['messages'])) {
       $init_nuxt_script = str_replace('messages: { }', 'messages: ' . json_encode($data['messages']), $init_nuxt_script);
     }
 
