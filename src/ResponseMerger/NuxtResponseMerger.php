@@ -21,7 +21,11 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     // Only deal with JSON responses, no assets.
     $header = $backendResponse->getHeader('Content-Type');
 
-    if (empty($header[0]) || strpos($header[0], 'application/json') !== 0) {
+    // Allow passing through responses for XML news feeds or sitemaps.
+    if (!empty($header[0]) && (strpos($header[0], 'application/rss+xml') === 0 || strpos($header[0], 'application/xml') === 0)) {
+      return $backendResponse;
+    }
+    elseif (empty($header[0]) || strpos($header[0], 'application/json') !== 0) {
       throw new BadRequestHttpException("Invalid content type requested.");
     }
 
