@@ -34,7 +34,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     // Finally, merge responses and serve them.
     $page = $frontendResponse->getBody()->__toString();
     $page = preg_replace('/<title(.*)>*<\/title>/', '<title$1>' . strip_tags($data['title']) . '</title>', $page);
-    $page = preg_replace('/<main role="main"(.*)><\/main>/', '<main role="main"$1>' . $data['content'] . '</main>', $page);
+    $page = preg_replace('/<main role="main"(.*)(\s(data-v-.{8}))+?><\/main>/', '<main role="main"$1>' . $data['content'] . '</main>', $page);
 
     // Append script element before closing body it will add `window.lupus`
     // global object, this object used to set initial state correctly within
