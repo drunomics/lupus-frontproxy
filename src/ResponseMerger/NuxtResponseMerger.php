@@ -29,8 +29,8 @@ class NuxtResponseMerger implements ResponseMergerInterface {
 
     // Finally, merge responses and serve them.
     $page = $frontendResponse->getBody()->__toString();
-    $page = preg_replace('/<title(.*)>*<\/title>/', '<title$1>' . strip_tags($data['title']) . '</title>', $page);
-    $page = preg_replace('/<main role="main"(.*)><\/main>/', '<main role="main"$1>' . $data['content'] . '</main>', $page);
+    $page = preg_replace('/<title((?:\s*[a-zA-Z\-0-9]+(?:="[^"]*")*\s*)*)>[^<]*<\/title>/', '<title$1>' . strip_tags($data['title']) . '</title>', $page);
+    $page = preg_replace('/<main role="main"((?:\s*[a-zA-Z\-0-9]+(?:="[^"]*")*\s*)*)><!----><\/main>/', '<main role="main"$1>' . $data['content'] . '</main>', $page);
 
     // Append script element before closing body it will add `window.lupus`
     // global object, this object used to set initial state correctly within
@@ -49,7 +49,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
 
     // Prepare breadcrumbs HTML.
     if (isset($data['breadcrumbs_html'])) {
-      $page = preg_replace('/<div class="breadcrumbs"(.*)><\/div>/', '<div class="breadcrumbs"$1>' . $data['breadcrumbs_html'] . '</div>', $page);
+      $page = preg_replace('/<div class="breadcrumbs"((?:\s*[a-zA-Z\-0-9]+(?:="[^"]*")*\s*)*)><\/div>/', '<div class="breadcrumbs"$1>' . $data['breadcrumbs_html'] . '</div>', $page);
     }
 
     // Prepare metatags.
