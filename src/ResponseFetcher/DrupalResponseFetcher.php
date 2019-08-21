@@ -4,6 +4,8 @@ namespace drunomics\LupusFrontProxy\ResponseFetcher;
 
 use Drupal\Core\DrupalKernel;
 use GuzzleHttp\Client;
+use GuzzleHttp\Handler\CurlMultiHandler;
+use GuzzleHttp\HandlerStack;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 use Psr\Http\Message\RequestInterface;
@@ -48,10 +50,14 @@ class DrupalResponseFetcher extends DefaultResponseFetcher {
    * {@inheritdoc}
    */
   public function fetchResponses(RequestInterface $frontend_request, RequestInterface $backend_request) {
-    $client = new Client($this->guzzleConfig);
+    $curl = new CurlMultiHandler();
+    $client = new Client(['handler' => HandlerStack::create($curl)] + $this->guzzleConfig);
     // Do the frontend request, and while this is resolved, handle the backend
     // request.
     $frontend_response = $client->sendAsync($frontend_request);
+    // Actually start sending the request, then process the backend meanwhile.
+    $curl->tick();
+
     $backend_response = $this->handleBackendRequest($backend_request);
 
     // Resolve the frontend promise first since static files should be always
