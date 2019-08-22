@@ -11,3 +11,18 @@ lupus = Object.assign(lupus ? lupus : {}, {
     messages: { }
   }
 });
+
+/**
+ * The goal of this part of the script is to remove the content injected from the frontproxy.
+ * Removing the content restores the original DOM structure before the nuxt app is mounted,
+ * so that the virtual dom tree matches the real one.
+ */
+const breadcrumbs = document.querySelector('.breadcrumbs')
+
+if (window.lupusContentEl) {
+  window.lupusContentEl.innerHTML = '<!---->'
+}
+
+if (breadcrumbs) {
+  breadcrumbs.innerHTML = ''
+}
