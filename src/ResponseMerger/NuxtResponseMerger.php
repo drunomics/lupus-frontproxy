@@ -15,6 +15,11 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class NuxtResponseMerger implements ResponseMergerInterface {
 
   /**
+   * A regex to match 0 or many html tag attributes.
+   */
+  const ATTRIBUTE_REGEX = '((?:\s*[a-zA-Z\-0-9]+(?:="[^"]*")*\s*)*)';
+
+  /**
    * {@inheritdoc}
    */
   public function mergeResponses(ResponseInterface $backendResponse, ResponseInterface $frontendResponse) {
@@ -29,8 +34,9 @@ class NuxtResponseMerger implements ResponseMergerInterface {
 
     // Finally, merge responses and serve them.
     $page = $frontendResponse->getBody()->__toString();
-    $page = preg_replace('/<title((?:\s*[a-zA-Z\-0-9]+(?:="[^"]*")*\s*)*)>[^<]*<\/title>/', '<title$1>' . strip_tags($data['title']) . '</title>', $page);
-    $page = preg_replace('/<main role="main"((?:\s*[a-zA-Z\-0-9]+(?:="[^"]*")*\s*)*)><!----><\/main>/', '<main role="main"$1>' . $data['content'] . '</main>', $page);
+    $attribute_regex = self::ATTRIBUTE_REGEX;
+    $page = preg_replace("/<title$attribute_regex>.*<\/title>/", '<title$1>' . strip_tags($data['title']) . '</title>', $page);
+    $page = preg_replace("/<main role=\"main\"$attribute_regex>.*<\/main>/", '<main role="main"$1>' . $data['content'] . '</main>', $page);
 
     // Append script element before closing body it will add `window.lupus`
     // global object, this object used to set initial state correctly within
@@ -49,7 +55,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
 
     // Prepare breadcrumbs HTML.
     if (isset($data['breadcrumbs_html'])) {
-      $page = preg_replace('/<div class="breadcrumbs"((?:\s*[a-zA-Z\-0-9]+(?:="[^"]*")*\s*)*)><\/div>/', '<div class="breadcrumbs"$1>' . $data['breadcrumbs_html'] . '</div>', $page);
+      $page = preg_replace("/<div class=\"breadcrumbs\"$attribute_regex>.*<\/div>/", '<div class="breadcrumbs"$1>' . $data['breadcrumbs_html'] . '</div>', $page);
     }
 
     // Prepare metatags.
@@ -68,7 +74,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
       }
 
       if ($metatags_html != '') {
-        $page = preg_replace('/<head (.*)>/', '<head $1>' . $metatags_html, $page);
+        $page = preg_replace("/<head $attribute_regex>/", '<head $1>' . $metatags_html, $page);
       }
     }
 
