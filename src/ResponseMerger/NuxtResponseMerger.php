@@ -59,7 +59,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
 
     // Prepare breadcrumbs HTML.
     if (isset($data['breadcrumbs_html'])) {
-      $page = preg_replace("/<div class=\"breadcrumbs\"($attribute_regex)>.*<\/div>/", '<div class="breadcrumbs"$1>' . $data['breadcrumbs_html'] . '</div>', $page);
+      $page = preg_replace("/<div class=\"breadcrumbs\"($attribute_regex)><\/div>/", '<div class="breadcrumbs"$1>' . $data['breadcrumbs_html'] . '</div>', $page);
     }
 
     // Prepare metatags.
