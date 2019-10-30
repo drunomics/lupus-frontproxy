@@ -2,6 +2,8 @@
 
 namespace drunomics\LupusFrontProxy;
 
+use drunomics\LupusFrontProxy\RequestGenerator\DefaultRequestGenerator;
+use drunomics\LupusFrontProxy\RequestGenerator\RequestGeneratorInterface;
 use drunomics\LupusFrontProxy\ResponseFetcher\DefaultResponseFetcher;
 use drunomics\LupusFrontProxy\ResponseFetcher\ResponseFetcherInterface;
 use GuzzleHttp\Psr7\Uri;
@@ -55,6 +57,13 @@ class RequestHandler {
   protected $responseFetcher;
 
   /**
+   * The request generator.
+   *
+   * @var \drunomics\LupusFrontProxy\RequestGenerator\RequestGeneratorInterface
+   */
+  protected $requestGenerator;
+
+  /**
    * RequestHandler constructor.
    *
    * @param string $baseUrl
@@ -67,14 +76,16 @@ class RequestHandler {
    *   The response merger to use.
    * @param \drunomics\LupusFrontProxy\ResponseFetcher\ResponseFetcherInterface|null $responseFetcher
    *   (optional) The response fetcher to use.
+   * @param \drunomics\LupusFrontProxy\RequestGenerator\RequestGeneratorInterface|null $requestGenerator
+   *   (optional) The request generator to use.
    */
-  public function __construct($baseUrl, $backendBaseUrl, $frontendBaseUrl, ResponseMergerInterface $responseMerger, ResponseFetcherInterface $responseFetcher = NULL) {
-    /** @var TYPE_NAME $this */
+  public function __construct($baseUrl, $backendBaseUrl, $frontendBaseUrl, ResponseMergerInterface $responseMerger, ResponseFetcherInterface $responseFetcher = NULL, RequestGeneratorInterface $requestGenerator = NULL) {
     $this->baseUrl = $baseUrl;
     $this->backendBaseUrl = trim($backendBaseUrl, '/');
     $this->frontendBaseUrl = trim($frontendBaseUrl, '/');
     $this->responseMerger = $responseMerger;
     $this->responseFetcher = $responseFetcher ?: new DefaultResponseFetcher();
+    $this->requestGenerator = $requestGenerator ?: new DefaultRequestGenerator($backendBaseUrl, $frontendBaseUrl);
   }
 
   /**
@@ -106,10 +117,8 @@ class RequestHandler {
    */
   public function handle(Request $request) {
     try {
-      $backend_request = $this->getBackendRequest($request);
-      // Fetch the page shell from the frontend.
-      // @todo: Add caching here.
-      $frontend_request = new GuzzleRequest('GET', $this->frontendBaseUrl . '/layout--default.html');
+      $backend_request = $this->requestGenerator->getBackendRequest($request);
+      $frontend_request = $this->requestGenerator->getFrontendRequest($request);
       list($frontend_response, $backend_response) = $this->responseFetcher->fetchResponses($frontend_request, $backend_request);
 
       $response_status = intval($backend_response->getStatusCode() / 100);
@@ -199,22 +208,6 @@ class RequestHandler {
   private function convertToSymfonyResponse(ResponseInterface $response) {
     $httpFoundationFactory = new HttpFoundationFactory();
     return $httpFoundationFactory->createResponse($response);
-  }
-
-  /**
-   * Generates a request by forwarding the request to the backend.
-   *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The http request.
-   *
-   * @return \Psr\Http\Message\ServerRequestInterface
-   *   The backend request.
-   */
-  private function getBackendRequest(Request $request) {
-    // Forward the request to the backend.
-    $psr7_request = (new DiactorosFactory())->createRequest($request);
-    $new_uri = str_replace($request->getSchemeAndHttpHost(), $this->backendBaseUrl, $psr7_request->getUri());
-    return $psr7_request->withUri(new Uri($new_uri));
   }
 
 }
