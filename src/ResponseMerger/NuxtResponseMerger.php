@@ -72,9 +72,8 @@ class NuxtResponseMerger implements ResponseMergerInterface {
           $metatags_html .= "<$tag_type data-source='backend'$attributes_string/>";
         }
       }
-
       if ($metatags_html != '') {
-        $page = preg_replace("/<head (.*?)>/", '<head $1>' . $metatags_html, $page);
+        $page = preg_replace("/<head(.*?)>/", '<head$1>' . $metatags_html, $page);
       }
     }
 
