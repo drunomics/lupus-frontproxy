@@ -6,13 +6,10 @@ use drunomics\LupusFrontProxy\RequestGenerator\DefaultRequestGenerator;
 use drunomics\LupusFrontProxy\RequestGenerator\RequestGeneratorInterface;
 use drunomics\LupusFrontProxy\ResponseFetcher\DefaultResponseFetcher;
 use drunomics\LupusFrontProxy\ResponseFetcher\ResponseFetcherInterface;
-use GuzzleHttp\Psr7\Uri;
 use drunomics\LupusFrontProxy\ResponseMerger\ResponseMergerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
-use GuzzleHttp\Psr7\Request as GuzzleRequest;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
