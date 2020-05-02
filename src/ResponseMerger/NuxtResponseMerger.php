@@ -83,16 +83,16 @@ class NuxtResponseMerger implements ResponseMergerInterface {
    *   The script code.
    */
   protected function getInitNuxtScript(array $page_data) {
-    $init_nuxt_script = file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js');
+    // Both, breadcrumbs and content is handled differently.
     unset($page_data['breadcrumbs_html'], $page_data['content']);
-    $json_data = [
-      'initialState' => $page_data + [
-        'synced' => FALSE,
-      ],
+    $json_data = $page_data + [
+      'synced' => FALSE,
     ];
     $json_string = json_encode($json_data);
-    $init_nuxt_script .= "window.lupus = Object.assign(window.lupus ? window.lupus : {}, $json_string);";
-    return $init_nuxt_script;
+    return
+      "window.lupus = window.lupus ? window.lupus : {}; window.lupus.initialState = $json_string;" .
+      file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js')
+      ;
   }
 
   /**
