@@ -89,10 +89,8 @@ class NuxtResponseMerger implements ResponseMergerInterface {
       'synced' => FALSE,
     ];
     $json_string = json_encode($json_data);
-    return
-      "window.lupus = window.lupus ? window.lupus : {}; window.lupus.initialState = $json_string;" .
-      file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js')
-      ;
+    return "window.lupus = window.lupus ? window.lupus : {}; window.lupus.initialState = $json_string;" .
+      file_get_contents(__DIR__ . '/../../assets/nuxt/initNuxt.js');
   }
 
   /**
