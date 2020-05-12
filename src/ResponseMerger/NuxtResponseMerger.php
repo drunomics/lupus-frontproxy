@@ -73,7 +73,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
         }
       }
       if ($metatags_html != '') {
-        $page = preg_replace("/<head(.*?)>/", '<head$1>' . $metatags_html, $page);
+        $page = preg_replace("/<head(.*?)>/", '<head$1>' . $metatags_html, $page, 1);
       }
     }
 
