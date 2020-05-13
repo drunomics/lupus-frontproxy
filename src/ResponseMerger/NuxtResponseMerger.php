@@ -59,6 +59,8 @@ class NuxtResponseMerger implements ResponseMergerInterface {
       }
     }
     if ($metatags_html) {
+      // Limited to 1 to match only <head> and not <header> as well as not having duplicates,
+      // <head> will always be the first match as it precedes the document.
       $page = preg_replace("/<head(.*?)>/", '<head$1>' . $metatags_html, $page, 1);
     }
 
