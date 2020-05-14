@@ -59,7 +59,10 @@ class NuxtResponseMerger implements ResponseMergerInterface {
       }
     }
     if ($metatags_html) {
-      $page = preg_replace("/<head(.*?)>/", '<head$1>' . $metatags_html, $page);
+      // Limited to 1 to match only <head> and not <header>
+      // and ensures that the metadata are inserted only once,
+      // <head> will always be the first match as it precedes the document.
+      $page = preg_replace("/<head(.*?)>/", '<head$1>' . $metatags_html, $page, 1);
     }
 
     // Append script element before closing body it will add `window.lupus`
