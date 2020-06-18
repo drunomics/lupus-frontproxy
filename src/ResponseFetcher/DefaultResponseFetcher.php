@@ -49,11 +49,11 @@ class DefaultResponseFetcher implements ResponseFetcherInterface {
     }
     else {
       // Fallback to letting server handle the request
-      $frontend_response = $client->sendAsync($frontend_request);
+      // $frontend_response = $client->sendAsync($frontend_request);
       // Resolve the frontend promise first since static files should be always
       // faster than the backend.
       /** @var \Psr\Http\Message\ResponseInterface $frontend_response */
-      $frontend_response = $frontend_response->wait();
+      // $frontend_response = $frontend_response->wait();
     }
 
     /** @var \Psr\Http\Message\ResponseInterface $backend_response */
