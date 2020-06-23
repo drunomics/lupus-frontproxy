@@ -76,7 +76,7 @@ class DrupalResponseFetcher extends DefaultResponseFetcher {
    *
    * @return \Psr\Http\Message\ResponseInterface
    */
-  private function handleBackendRequest(RequestInterface $request) {
+  protected function handleBackendRequest(RequestInterface $request) {
     // Determine app root and change directory to it, so templates etc. are
     // all found as usual.
     DrupalKernel::bootEnvironment();
