@@ -1,6 +1,5 @@
 <?php
 
-
 namespace drunomics\LupusFrontProxy\ResponseFetcher;
 
 use Drupal\Core\File\Exception\FileNotExistsException;
