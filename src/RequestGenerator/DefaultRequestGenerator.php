@@ -76,9 +76,9 @@ class DefaultRequestGenerator implements RequestGeneratorInterface {
    */
   public function getFrontendRequest(Request $request) {
     $path = trim($request->getPathInfo(), '/');
-    $frontend_path = $this->isFrontendPage($request) ? $this->frontendPages[$path] : '/' . $this->defaultPage . '.html';
+    $frontend_path = $this->isFrontendPage($request) ? $path : $this->defaultPage;
     // @todo: Possibly add some caching here.
-    return new GuzzleRequest('GET', $this->frontendBaseUrl . $frontend_path);
+    return new GuzzleRequest('GET', $this->frontendBaseUrl . '/' . $frontend_path . '.html');
   }
 
   /**
@@ -101,7 +101,7 @@ class DefaultRequestGenerator implements RequestGeneratorInterface {
    * @return $this
    */
   public function setFrontendPages(array $pages) {
-    $this->frontendPages = $pages;
+    $this->frontendPages = array_flip($pages);
     return $this;
   }
 
