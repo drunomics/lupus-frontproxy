@@ -44,10 +44,11 @@ class LocalFrontendDrupalResponseFetcher extends DrupalResponseFetcher {
    */
   public function fetchResponses(RequestInterface $frontend_request, RequestInterface $backend_request) {
     // Try finding frontend resource via filesystem.
-    $request_body = file_get_contents($this->publicDir . '/layout--default.html');
+    $path = $frontend_request->getUri()->getPath();
+    $request_body = file_get_contents($this->publicDir . $path);
 
     if (!$request_body) {
-      throw new FileNotExistsException('Resource "layout--default.html" not found in directory ' . $this->publicDir);
+      throw new FileNotExistsException("Resource \"$path\" not found in directory " . $this->publicDir);
     }
 
     $frontend_response = new Response(200, [], $request_body);
