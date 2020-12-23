@@ -118,10 +118,6 @@ class RequestHandler {
       $frontend_request = $this->requestGenerator->getFrontendRequest($request);
       list($frontend_response, $backend_response) = $this->responseFetcher->fetchResponses($frontend_request, $backend_request);
 
-      if ($this->requestGenerator->isFrontendPage($request)) {
-        return $this->convertToSymfonyResponse($frontend_response);
-      }
-
       $response_status = intval($backend_response->getStatusCode() / 100);
       if ($response_status == 2) {
         return $this->getCombinedResponse($backend_response, $frontend_response);
