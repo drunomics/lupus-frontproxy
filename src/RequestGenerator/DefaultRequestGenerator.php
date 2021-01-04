@@ -58,7 +58,6 @@ class DefaultRequestGenerator implements RequestGeneratorInterface {
     $this->defaultPage = $defaultPage;
   }
 
-
   /**
    * {@inheritdoc}
    *
