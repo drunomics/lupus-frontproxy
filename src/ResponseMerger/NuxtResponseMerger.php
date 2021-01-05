@@ -29,7 +29,7 @@ class NuxtResponseMerger implements ResponseMergerInterface {
       throw new BadRequestHttpException("Invalid content type requested.");
     }
 
-    $data = json_decode($backendResponse->getBody()->__toString(), TRUE);
+    $data = (array) json_decode($backendResponse->getBody()->__toString(), TRUE);
     $data += [
       'messages' => [],
       'breadcrumbs' => [],
