@@ -50,13 +50,18 @@ class NuxtResponseMerger implements ResponseMergerInterface {
     // Add metatags to the HTML.
     $metatags_html = '';
     foreach ($data['metatags'] as $tag_type => $metatags_data) {
-      foreach ($metatags_data as $properties) {
-        $attributes_string = "";
-        foreach ($properties as $attribute => $value) {
-          $attributes_string .= " " . $attribute . "='" . $value . "'";
+      if (is_array($metatags_data)) {
+        foreach ($metatags_data as $properties) {
+          $attributes_string = "";
+          foreach ($properties as $attribute => $value) {
+            $attributes_string .= " " . $attribute . "='" . $value . "'";
+          }
+          $metatags_html .= "<$tag_type data-source='backend'$attributes_string/>";
         }
-        $metatags_html .= "<$tag_type data-source='backend'$attributes_string/>";
       }
+    }
+    if (isset($data['metatags']['jsonld'])) {
+      $metatags_html .= $data['metatags']['jsonld'];
     }
     if ($metatags_html) {
       // Limited to 1 to match only <head> and not <header>
